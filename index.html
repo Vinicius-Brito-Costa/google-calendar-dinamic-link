@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <title>Google's Calendar Link Creator</title>
+</head>
+<body>
+    <script>
+        const BASE_URL = "https://calendar.google.com/calendar/r/eventedit?"
+        const CONCAT_KEY = "&"
+        const TITLE_KEY = "text"
+        const DESCRIPTION_KEY = "details"
+        const DATES_KEY = "dates"
+        const DATE_FORMAT = "YYYYMMDDTHHmmSSZ"
+
+        function getParams(){
+            return new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+              });
+        }
+
+        const params = getParams()
+
+        if(params.title){
+            let path = TITLE_KEY + "=" + params.title
+            if (params.desc){
+                path += CONCAT_KEY + DESCRIPTION_KEY + "=" + params.desc
+            }
+
+            if (params.hour || params.min){
+                var currentDate = moment()
+                var targetDate = moment()
+                if (params.hour) {
+                    targetDate.add(params.hour, "hours")
+                }
+                if(params.min){
+                    targetDate.add(params.min, "minutes")
+                }
+                path += CONCAT_KEY + DATES_KEY + "=" + currentDate.format(DATE_FORMAT) +"/"+ targetDate.format(DATE_FORMAT)
+            }
+            window.location.href = BASE_URL + path;
+            //window.location.replace(BASE_URL + path);
+        }
+    </script>
+</body>
+</html>
